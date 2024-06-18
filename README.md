@@ -59,9 +59,11 @@ Recommended Constructor Details:
 Let me know if you'd like adjustments in difficulty level or would like to focus on specific aspects of these technologies!
 
 Later I will share the reference implementation.
-inv
-==============================
 
+### Setup
+Install ffmpeg globally. 
+
+### About
 A short description of the project.
 
 Project Organization

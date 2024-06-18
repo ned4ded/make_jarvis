@@ -1,12 +1,16 @@
-import wave
 import struct
-import os
 from datetime import datetime
+import numpy as np
 
+import whisper
 import pvporcupine
 from pvrecorder import PvRecorder
 
 from src.config import settings
+
+print("Loading whisper...")
+w_model = whisper.load_model("large")
+print("Whisper is loaded.")
 
 try:
     porcupine = pvporcupine.create(
@@ -49,13 +53,14 @@ print("Listening ... (press Ctrl+C to exit)")
 try:
     is_writing = False
     wav_file = None
+    audio_data = bytearray(b"")
 
     while True:
         pcm = recorder.read()
         result = porcupine.process(pcm)
 
-        if wav_file is not None and is_writing:
-            wav_file.writeframes(struct.pack("h" * len(pcm), *pcm))
+        if is_writing:
+            audio_data.extend(struct.pack("h" * len(pcm), *pcm))
 
         if result >= 0:
             print("[%s] Detected %s" % (str(datetime.now()), "Эй-Конь"))
@@ -63,22 +68,19 @@ try:
 
             if is_writing:
                 print("Enabling recorder")
-                if os.path.exists(settings.output_path):
-                    os.remove(settings.output_path)
-                    print(f"The old file '{settings.output_path}' has been removed.")
-                wav_file = wave.open(settings.output_path, "w")
-                wav_file.setnchannels(1)
-                wav_file.setsampwidth(2)
-                wav_file.setframerate(16000)
             else:
                 print("Disabling recorder")
-                if wav_file is not None:
-                    wav_file.close()
+                print("Transcribing...")
+                audio_np = (
+                    np.frombuffer(audio_data, dtype=np.int16).astype(np.float32)
+                    / 32768.0
+                )
+                result = w_model.transcribe(audio_np)
+                print(result["text"])
+                audio_data = bytearray(b"")
 
 except KeyboardInterrupt:
     print("Stopping ...")
 finally:
     recorder.delete()
     porcupine.delete()
-    if wav_file is not None:
-        wav_file.close()
