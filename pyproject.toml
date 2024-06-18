@@ -1,0 +1,28 @@
+[tool.poetry]
+name = "botik-agent"
+version = "0.1.0"
+description = ""
+authors = ["Your Name <you@example.com>"]
+readme = "README.md"
+packages = [{ include = 'src/' }]
+
+[tool.poetry.dependencies]
+python = "^3.12"
+click = "^8.1.7"
+flake8 = "^7.0.0"
+Sphinx = "^7.3.7"
+black = "^24.4.2"
+flake8-bugbear = "^24.4.26"
+python-dotenv = "^1.0.1"
+requests = "^2.32.3"
+pvporcupine = "^3.0.2"
+pydantic-settings = "^2.3.3"
+pvrecorder = "^1.2.2"
+
+
+[tool.poetry.group.dev.dependencies]
+ipykernel = "^6.29.4"
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
