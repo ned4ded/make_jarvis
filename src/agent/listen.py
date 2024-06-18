@@ -1,12 +1,14 @@
 import struct
 from datetime import datetime
 import numpy as np
+import os
 
 import whisper
 import pvporcupine
 from pvrecorder import PvRecorder
 
 from src.config import settings
+from src.agent.llm import ask
 
 print("Loading whisper...")
 w_model = whisper.load_model("large")
@@ -50,6 +52,11 @@ recorder.start()
 
 print("Listening ... (press Ctrl+C to exit)")
 
+
+def say(t: str):
+    os.system(f"say {t}")
+
+
 try:
     is_writing = False
     wav_file = None
@@ -76,8 +83,12 @@ try:
                     / 32768.0
                 )
                 result = w_model.transcribe(audio_np)
-                print(result["text"])
+                print("Asking LLM...")
+                answer = ask(result["text"])
+                print(answer)
+                say(answer)
                 audio_data = bytearray(b"")
+                print("End")
 
 except KeyboardInterrupt:
     print("Stopping ...")

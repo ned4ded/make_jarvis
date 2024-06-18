@@ -8,6 +8,8 @@ class Settings(BaseSettings):
 
     picovoice_access_key: str
 
+    llm_key: str
+
     output_path: str = "data/interim/current.wav"
 
 
